@@ -18,11 +18,8 @@ function saveLocalStorage(bodyText, id) {
   bodyOb[id] = bodyText;
   // ... is a deep copy, or a spread operator
   // copies of localStorageMap and bodyOb, instead of the actual object
-  // newStorage combines old localStorageMap and the new bodyOb
+  // newStorage combines old localStorageMap and the new bodyOb to allow for overwriting
   var newStorage = {...localStorageMap, ...bodyOb}
-  console.log(localStorageMap);
-  console.log(bodyOb);
-  console.log(newStorage);
 
   localStorage.setItem('map', JSON.stringify(newStorage));
 }
@@ -31,25 +28,25 @@ function saveLocalStorage(bodyText, id) {
 $("button").on("click", saveEvent);
 
 function saveEvent(event) {
-  // checks to ensure shit code does not fire on alert close
-  // alert close is a button
-  if (this.className === 'btn-close') {
-    $('.alert').addClass('d-none');
-  }
-
   event.preventDefault();
 
+  // checks to ensure shit code does not fire on alert close
+  // alert close is a button
+  console.log(this.className)
+  if (this.className === 'btn-close') {
+    $('.alert').addClass('d-none');
+    return;
+  }
+
   // this refers to the button element
-  var bodyText = this.parentElement.querySelector('.description').value.trim();
-  var bodyId = this.parentElement.querySelector('.description').id;
+  var bodyText = $(this).parent().children('.description').val().trim();
+  var bodyId = $(this).parent().children('.description').attr('id');
   saveLocalStorage(bodyText, bodyId);
 
   $('.alert').removeClass('d-none');
-  
 };
 
 function checkTime() {
-  console.log('checking time')
   // sets text for date and time
   $currentDay.text(dayjs().format('dddd, MMMM D, hh:mm:ss a'));
   // step1 - grab id we want to compare
@@ -75,7 +72,12 @@ function checkTime() {
       timeEl += 12;
     }
 
-    // step4 - for loop comparison checking for time and id to apply correct color
+    // removes any classes from previous time
+    timeDiv.removeClass('past');
+    timeDiv.removeClass('present');
+    timeDiv.removeClass('future');
+
+    // for loop comparison checking for time and id to apply correct color
     if (timeEl < currentHour) {
       timeDiv.addClass('past');
     } else if (timeEl === currentHour) {
@@ -93,7 +95,6 @@ function init() {
     // this allows for the text to be set on the specific area
     //localStorMap[key] = localStorageMap.key
     var keyValue = $(`#${key}`);
-    console.log(keyValue);
     keyValue.text(localStorageMap[key])
   }
   checkTime();
