@@ -5,82 +5,100 @@ var saveButton = $('button')
 var localStorageMap = JSON.parse(localStorage.getItem(`map`)) || [];
 var bodyOb = {}
 
-function saveEvent(bodyText, id) {
+//from bootstrap
+var alertList = document.querySelectorAll('.alert')
+var alerts =  [].slice.call(alertList).map(function (element) {
+  return new bootstrap.Alert(element)
+})
+
+
+function saveLocalStorage(bodyText, id) {
   // inputs the id from line 24 and creates
+  
   bodyOb[id] = bodyText;
-  // spread property 
-  var newStorage = {...bodyOb, ...localStorageMap}
+  // ... is a deep copy, or a spread operator
+  // copies of localStorageMap and bodyOb, instead of the actual object
+  // newStorage combines old localStorageMap and the new bodyOb
+  var newStorage = {...localStorageMap, ...bodyOb}
+  console.log(localStorageMap);
   console.log(bodyOb);
-  // init();
+  console.log(newStorage);
 
   localStorage.setItem('map', JSON.stringify(newStorage));
 }
 
-$("button").on("click", function(event) {
-  
+// grabs all buttons and adds an event listener
+$("button").on("click", saveEvent);
+
+function saveEvent(event) {
+  // checks to ensure shit code does not fire on alert close
+  // alert close is a button
+  if (this.className === 'btn-close') {
+    $('.alert').addClass('d-none');
+  }
+
   event.preventDefault();
 
   // this refers to the button element
   var bodyText = this.parentElement.querySelector('.description').value.trim();
   var bodyId = this.parentElement.querySelector('.description').id;
-  saveEvent(bodyText, bodyId);
-});
+  saveLocalStorage(bodyText, bodyId);
+
+  $('.alert').removeClass('d-none');
+  
+};
 
 function checkTime() {
-  console.log(today.format('h'));
+  console.log('checking time')
+  // sets text for date and time
+  $currentDay.text(dayjs().format('dddd, MMMM D, hh:mm:ss a'));
   // step1 - grab id we want to compare
-  var $hour9 = $('#hour-9');
-  timeEl = $hour9.children('div').text();
-  
-  // step2 - split the string at "-"
-  // removes the AM/PM from the time to get the number
-  timeEl = timeEl.substring(0, timeEl.length - 2);
+  var currentHour = today.format('HH');
 
-  // step3 - convert the id into an integer
-  // turns the timeEl string into a number
-  timeEl = parseInt(timeEl, 10);
-  // step4 - for loop comparison checking for time and id
-  if (timeEl < today.format('HH')) {
-    $hour9.addClass('past');
+  // loops through the hour ids and applies their color
+  for (var i = 0; i <= 8; i++) {
+    // grabs all of the hour ids
+    var timeDiv = $(`#hour-${i+9}`)
+    
+    // grabs the div that holds the time text
+    timeEl = timeDiv.children('div').text();
+
+    // removes the AM/PM from the time to get the number by deleting 2 characters in the string
+    timeEl = timeEl.substring(0, timeEl.length - 2);
+
+    // turns timeEl and currentHour into a number
+    timeEl = parseInt(timeEl, 10);
+    currentHour = parseInt(currentHour, 10);
+
+    // we changed the time to accomodate a 24 hour clock
+    if (i >= 4) {
+      timeEl += 12;
+    }
+
+    // step4 - for loop comparison checking for time and id to apply correct color
+    if (timeEl < currentHour) {
+      timeDiv.addClass('past');
+    } else if (timeEl === currentHour) {
+      timeDiv.addClass('present');
+    } else {
+      timeDiv.addClass('future')
+    }
   }
-
-  // step5 - apply correct class
-
-
 }
-
-$(function () {
-  // TODO: Add a listener for click events on the save button. This code should
-  // use the id in the containing time-block as a key to save the user input in
-  // local storage. HINT: What does `this` reference in the click listener
-  // function? How can DOM traversal be used to get the "hour-x" id of the
-  // time-block containing the button that was clicked? How might the id be
-  // useful when saving the description in local storage?
-  //
-  // TODO: Add code to apply the past, present, or future class to each time
-  // block by comparing the id to the current hour. HINTS: How can the id
-  // attribute of each time-block be used to conditionally add or remove the
-  // past, present, and future classes? How can Day.js be used to get the
-  // current hour in 24-hour time?
-  //
-  // TODO: Add code to get any user input that was saved in localStorage and set
-  // the values of the corresponding textarea elements. HINT: How can the id
-  // attribute of each time-block be used to do this?
-  //
-  // TODO: Add code to display the current date in the header of the page.
-});
 
 function init() {
   // for every key in my key pairs in the localStorageMap object
   for(key in localStorageMap) {
-    // console.log(key);
-    // ${key} tells JQuery what id to look for to set the text value
+    // ${#key} tells JQuery what id to look for to set the text value
     // this allows for the text to be set on the specific area
-    $(`#${key}`).text(localStorageMap[key])
+    //localStorMap[key] = localStorageMap.key
+    var keyValue = $(`#${key}`);
+    console.log(keyValue);
+    keyValue.text(localStorageMap[key])
   }
-
-  $currentDay.text(today.format('dddd, MMMM D'));
   checkTime();
 }
+
+setInterval(checkTime, 1000);
 
 init();
