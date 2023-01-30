@@ -32,7 +32,6 @@ function saveEvent(event) {
 
   // checks to ensure shit code does not fire on alert close
   // alert close is a button
-  console.log(this.className)
   if (this.className === 'btn-close') {
     $('.alert').addClass('d-none');
     return;
