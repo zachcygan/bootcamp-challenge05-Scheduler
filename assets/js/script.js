@@ -1,7 +1,6 @@
-var $currentDay = $('#currentDay')
+var $currentDay = $('#currentDay');
 var today = dayjs();
-var saveButton = $('button')
-// const map = new Map();
+var saveButton = $('button');
 var localStorageMap = JSON.parse(localStorage.getItem(`map`)) || [];
 var bodyOb = {}
 
@@ -49,7 +48,7 @@ function checkTime() {
   // sets text for date and time
   $currentDay.text(dayjs().format('dddd, MMMM D, hh:mm:ss a'));
   // step1 - grab id we want to compare
-  var currentHour = today.format('HH');
+  var currentHour = dayjs().format('HH');
 
   // loops through the hour ids and applies their color
   for (var i = 0; i <= 8; i++) {
