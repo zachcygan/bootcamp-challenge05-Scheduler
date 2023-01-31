@@ -20,5 +20,6 @@ grey: past
 ## Screenshots
 
 ![screenshot of the website](assets/images/screenshot.png)
+![screenshot of the website](assets/images/screenshot2.png)
 
 

@@ -55,7 +55,7 @@ $(document).ready(function(){
     // loops through the hour ids and applies their color
     for (var i = 0; i <= 8; i++) {
       // grabs all of the hour ids
-      var timeDiv = $(`#hour-${i+9}`)
+      var timeDiv = $(`#hour-${i+9}`);
       
       // grabs the div that holds the time text
       timeEl = timeDiv.children('div').text();
